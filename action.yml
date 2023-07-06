@@ -14,9 +14,8 @@ inputs:
     required: true
 runs:
   using: 'node16'
+  main: dist/index.js
   steps:
-    - run: node dist/index.js
-      shell: bash
     - name: Update resources
       uses: test-room-7/action-update-file@v1
       with:
