@@ -9805,16 +9805,14 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 	const pluginTemplate = (p) => `| ${p.urlstr.padEnd(longest.urlstr," ")} | ${p.description.padEnd(longest.description, " ")} | ${(p.supported?.Win===!0)?'✅':'?'}  | ${(p.supported?.Mac===!0)?'✅':'?'}  | ${(p.supported?.Lin===!0)?'✅':'?'}  | ${(p.supported?.iOS===!0)?'✅':'?'}   | ${(p.supported?.And===!0)?'✅':'?'}   |\n`;
 
 	const octokit = github.getOctokit(process?.env?.github_token)
-	const json = await octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: true });
+	const { data: json } = await octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: true });
 	// const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json());
 
-	console.log(json, json?.data?.tree[0]);
 	//					      'plugins/'			'plugins/test/abc.txt' -> 'test/abc.txt'		   'plugins/test/README.md'	    'plugins/test/ios'        'plugins/test/android'
-	const pluginTree = json.data?.tree?.filter(t=>t.path.startsWith(folderslash) && t.path.replace(folderslash, '').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android"))) ?? [];
-	if (!json.data?.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be!', pluginTree);
+	const pluginTree = json.tree?.filter(t=>t.path.startsWith(folderslash) && t.path.replace(folderslash,'').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android"))) ?? [];
+	if (!json.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be!', pluginTree);
 
 	for (const plugin of pluginTree) {
-		console.log(plugin);
 		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
 
 		if (plugin.path.endsWith("ios") || plugin.path.endsWith("android")) {
@@ -9828,7 +9826,8 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 		plugin.urlstr = `[${plugin.foldername}](${folder}/${plugin.foldername})`;
 		plugin.description = '';
 		plugin.supported = { Win: null, Mac: null, Lin: null, iOS: null, And: null };
-		plugin.content = await fetch(plugin.url).then(r=>r.json()).then(d=>atob(d.content));
+		plugin.content = await octokit.rest.git.getBlob({ owner, repo, file_sha: plugin.url.replace(/.*\/git\/blobs\//,'') }).then(d=>atob(d.data.content)); 
+		//plugin.content = await fetch(plugin.url).then(r=>r.json()).then(d=>atob(d.content));
 
 		const regex = /\[([^\]]+)\]\(([^\)]+)\)\n\n(.*)\n\n## Install/s;
 		let m;
