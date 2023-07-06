@@ -1,0 +1,22 @@
+name: 'Tauri Plugin README Generator'
+description: 'Generate README for Tauri Plugin Workspace'
+inputs:
+  filename:
+    description: 'Output filename'
+    required: true
+    default: 'README.md'
+  folder:
+    description: 'Path to location of plugins'
+    required: true
+    default: 'plugins'
+runs:
+  using: 'node16'
+  steps:
+    - run: node dist/index.js
+      shell: bash
+    - name: Update resources
+      uses: test-room-7/action-update-file@v1
+      with:
+        file-path: ${{ inputs.filename }}
+        commit-msg: Updated ${{ inputs.filename }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
