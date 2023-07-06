@@ -1,7 +1,33 @@
 ## Plugins Found Here
 
-|  |  | Win | Mac | Lin | iOS | And |
-|  |  | --- | --- | --- | --- | --- |
+|                                                |                                                                                                                                                                         | Win | Mac | Lin | iOS | And |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- | --- | --- | --- |
+| [app](plugins/app)                             | This plugin provides APIs to read application metadata and macOS app visibility functions.                                                                              | ✅  | ✅  | ✅  | ?   | ?   |
+| [authenticator](plugins/authenticator)         | Use hardware security-keys in your Tauri App.                                                                                                                           | ✅  | ✅  | ✅  | ?   | ?   |
+| [autostart](plugins/autostart)                 | Automatically launch your application at startup. Supports Windows, Mac (via AppleScript or Launch Agent), and Linux.                                                   | ✅  | ✅  | ✅  | ?   | ?   |
+| [cli](plugins/cli)                             | Parse arguments from your Command Line Interface.                                                                                                                       | ✅  | ✅  | ✅  | ?   | ?   |
+| [clipboard-manager](plugins/clipboard-manager) | Read and write to the system clipboard.                                                                                                                                 | ✅  | ✅  | ✅  | ✅   | ✅   |
+| [dialog](plugins/dialog)                       | Native system dialogs for opening and saving files along with message dialogs.                                                                                          | ✅  | ✅  | ✅  | ✅   | ✅   |
+| [fs](plugins/fs)                               | Access the file system.                                                                                                                                                 | ✅  | ✅  | ✅  | ?   | ?   |
+| [global-shortcut](plugins/global-shortcut)     | Register global shortcuts.                                                                                                                                              | ✅  | ✅  | ✅  | ?   | ?   |
+| [http](plugins/http)                           | Access the HTTP client written in Rust.                                                                                                                                 | ✅  | ✅  | ✅  | ?   | ?   |
+| [localhost](plugins/localhost)                 | Expose your apps assets through a localhost server instead of the default custom protocol.                                                                              | ✅  | ✅  | ✅  | ?   | ?   |
+| [log](plugins/log)                             | Configurable logging for your Tauri app.                                                                                                                                | ✅  | ✅  | ✅  | ✅   | ?   |
+| [notification](plugins/notification)           | Send message notifications (brief auto-expiring OS window element) to your user. Can also be used with the Notification Web API.                                        | ✅  | ✅  | ✅  | ✅   | ✅   |
+| [os](plugins/os)                               | Read information about the operating system.                                                                                                                            | ✅  | ✅  | ✅  | ?   | ?   |
+| [persisted-scope](plugins/persisted-scope)     | Save filesystem and asset scopes and restore them when the app is reopened.                                                                                             | ✅  | ✅  | ✅  | ?   | ?   |
+| [positioner](plugins/positioner)               | Position your windows at well-known locations.  This plugin is a port of [electron-positioner](https://github.com/jenslind/electron-positioner) for Tauri.              | ✅  | ✅  | ✅  | ?   | ?   |
+| [process](plugins/process)                     | This plugin provides APIs to access the current process. To spawn child processes, see the [`shell`](https://github.com/tauri-apps/tauri-plugin-shell) plugin.          | ✅  | ✅  | ✅  | ?   | ?   |
+| [shell](plugins/shell)                         | Access the system shell. Allows you to spawn child processes and manage files and URLs using their default application.                                                 | ✅  | ✅  | ✅  | ?   | ?   |
+| [single-instance](plugins/single-instance)     | Ensure a single instance of your tauri app is running.                                                                                                                  | ✅  | ✅  | ✅  | ?   | ?   |
+| [sql](plugins/sql)                             | Interface with SQL databases through [sqlx](https://github.com/launchbadge/sqlx). It supports the `sqlite`, `mysql` and `postgres` drivers, enabled by a Cargo feature. | ✅  | ✅  | ✅  | ?   | ?   |
+| [store](plugins/store)                         | Simple, persistent key-value store.                                                                                                                                     | ✅  | ✅  | ✅  | ?   | ?   |
+| [stronghold](plugins/stronghold)               | Store secrets and keys using the [IOTA Stronghold](https://github.com/iotaledger/stronghold.rs) encrypted database and secure runtime.                                  | ✅  | ✅  | ✅  | ?   | ?   |
+| [updater](plugins/updater)                     | In-app updates for Tauri applications.                                                                                                                                  | ✅  | ✅  | ✅  | ?   | ?   |
+| [upload](plugins/upload)                       | Upload files from disk to a remote server over HTTP. Download files from a remote HTTP server to disk.                                                                  | ✅  | ✅  | ✅  | ?   | ?   |
+| [websocket](plugins/websocket)                 | Expose a WebSocket server to your Tauri frontend.                                                                                                                       | ✅  | ✅  | ✅  | ?   | ?   |
+| [window-state](plugins/window-state)           | Save window positions and sizes and restore them when the app is reopened.                                                                                              | ✅  | ✅  | ✅  | ?   | ?   |
+| [window](plugins/window)                       | Interact with the Tauri window.                                                                                                                                         | ✅  | ✅  | ✅  | ?   | ?   |
 
 
 _This repo and all plugins require a Rust version of at least **1.65**_
