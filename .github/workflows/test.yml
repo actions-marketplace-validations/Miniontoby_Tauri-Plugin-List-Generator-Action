@@ -13,6 +13,3 @@ jobs:
           filename: test_README.md
           folder: plugins
           github_token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          GITHUB_REPOSITORY: tauri-apps/plugins-workspace
-          GITHUB_REF_NAME: v2

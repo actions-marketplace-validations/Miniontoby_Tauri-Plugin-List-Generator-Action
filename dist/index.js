@@ -9860,18 +9860,20 @@ async function run() {
 		let filename = process?.env?.filename ?? 'README.md';
 		let folder = process?.env?.folder ?? 'plugins';
 
-		let owner = 'tauri-apps', repo = 'plugins-workspace';
+		let owner = 'tauri-apps', repo = 'plugins-workspace', branch = 'v2';
 		if (github.context.payload?.repository) {
 			owner = github.context.payload.repository.owner.login;
 			repo = github.context.payload.repository.name;
 		}
 		if (process?.env?.GITHUB_REPOSITORY) [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+		if (process?.env?.GITHUB_REF_NAME) branch = process?.env?.GITHUB_REF_NAME;
 		if (owner == 'Miniontoby' && repo.toLowerCase() == 'tauri-plugin-list-generator-action') {
 			owner = 'tauri-apps';
 			repo = 'plugins-workspace';
+			branch = 'v2';
 		}
 
-		const CONTENT = await generateREADME(process?.env?.GITHUB_REF_NAME ?? 'v2', folder, owner, repo);
+		const CONTENT = await generateREADME(branch, folder, owner, repo);
 		await fs.writeFileSync(filename, CONTENT);
 	} catch (error) {
 		console.error(error);
