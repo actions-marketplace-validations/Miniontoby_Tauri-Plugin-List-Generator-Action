@@ -12,13 +12,15 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 	const octokit = github.getOctokit(process?.env?.github_token)
 	const json = await octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: true });
-
 	// const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json());
+
+	console.log(json);
+
 	const pluginTree = json.data?.tree?.filter(t=>t.path.startsWith(folderslash) && (t.path.replace(folderslash, '').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android")))) ?? [];
-	if (!json.data?.tree) {
-		console.log('Json is NOT how it should be: ', json);
-	}
+	if (!json.data?.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be!');
+
 	for (const plugin of pluginTree) {
+		console.log(plugin);
 		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
 
 		if (plugin.path.endsWith("ios") || plugin.path.endsWith("android")) {
