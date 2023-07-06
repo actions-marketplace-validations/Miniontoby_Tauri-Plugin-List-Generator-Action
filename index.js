@@ -14,6 +14,8 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 	const { data: json } = await octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: true });
 	// const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json());
 
+	console.log(`folderslash: ${folderslash}\n`, JSON.stringify(json.tree));
+
 	//					      'plugins/'			'plugins/test/abc.txt' -> 'test/abc.txt'		   'plugins/test/README.md'	    'plugins/test/ios'        'plugins/test/android'
 	const pluginTree = json.tree?.filter(t=>t.path.startsWith(folderslash) && t.path.replace(folderslash,'').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android"))) ?? [];
 	if (!json.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be! ' + JSON.stringify(pluginTree));
