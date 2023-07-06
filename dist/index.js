@@ -9806,15 +9806,10 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 	const octokit = github.getOctokit(process?.env?.github_token);
 	const { data: json } = await octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: true });
-	// const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json());
 
-	console.log(`folderslash: ${folderslash}\n`, JSON.stringify(json.tree.slice(0, 10)));
-
-	await new Promise(resolve => setTimeout(resolve, 3000));
-
-	//					      'plugins/'			'plugins/test/abc.txt' -> 'test/abc.txt'		   'plugins/test/README.md'	    'plugins/test/ios'        'plugins/test/android'
 	const pluginTree = json.tree?.filter(t=>t.path.startsWith(folderslash) && t.path.replace(folderslash,'').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android"))) ?? [];
-	if (!json.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be! ' + JSON.stringify(pluginTree));
+	if (!json.tree) throw new Error('Git tree response is NOT looking as it should be looking!\n' + JSON.stringify(json));
+	if (pluginTree.length == 0) throw new Error(`No plugins are found in folder ${folder}!`);
 
 	for (const plugin of pluginTree) {
 		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
@@ -9831,7 +9826,6 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 		plugin.description = '';
 		plugin.supported = { Win: null, Mac: null, Lin: null, iOS: null, And: null };
 		plugin.content = await octokit.rest.git.getBlob({ owner, repo, file_sha: plugin.url.replace(/.*\/git\/blobs\//,'') }).then(d=>atob(d.data.content)); 
-		//plugin.content = await fetch(plugin.url).then(r=>r.json()).then(d=>atob(d.content));
 
 		const regex = /\[([^\]]+)\]\(([^\)]+)\)\n\n(.*)\n\n## Install/s;
 		let m;
@@ -9875,8 +9869,10 @@ async function run() {
 
 		const CONTENT = await generateREADME(branch, folder, owner, repo);
 		await fs.writeFileSync(filename, CONTENT);
+		core.info(`Written new README to ${filename}!`);
 	} catch (error) {
 		console.error(error);
+		await new Promise(res => setTimeout(res, 3000)); // wait 3 seconds so the error can be FULLY consoled
 		core.setFailed(error.message);
 	}
 }

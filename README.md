@@ -1,6 +1,30 @@
-# Tauri Plugin README Generator
+# Tauri Plugin Workspace README file Generator
 
-This action generates a README for Tauri Plugin Workspace
+This action generates a README for Tauri Plugin Workspace, but it could also generate one for yours:
+
+# How to use for other repo's
+
+This action will also work for other repo's, if they meet these requirements:
+
+- [X] Subprojects are inside a folder
+- [X] All subprojects include a README.md
+- [X] All README.md's are starting with a banner/image followed by the description (and an optional `- Supported platforms: (platforms here)`) and then `## Install`
+Example:
+```md
+![altname](banner.png)
+
+Automatically launch your application at startup.
+
+- Supported platforms: Windows, Linux, and macOS.
+
+## Install
+
+There are three general methods of installation that we can recommend.
+
+(...)
+```
+
+# Using the action
 
 ## Inputs
 
