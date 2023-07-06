@@ -10,16 +10,19 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 	const pluginTemplate = (p) => `| ${p.urlstr.padEnd(longest.urlstr," ")} | ${p.description.padEnd(longest.description, " ")} | ${(p.supported?.Win===!0)?'✅':'?'}  | ${(p.supported?.Mac===!0)?'✅':'?'}  | ${(p.supported?.Lin===!0)?'✅':'?'}  | ${(p.supported?.iOS===!0)?'✅':'?'}   | ${(p.supported?.And===!0)?'✅':'?'}   |\n`;
 
-	const octokit = github.getOctokit(process?.env?.github_token)
+	const octokit = github.getOctokit(process?.env?.github_token);
 	const { data: json } = await octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: true });
 	// const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json());
 
-	console.log(`folderslash: ${folderslash}\n`, JSON.stringify(json.tree));
+	console.log(`folderslash: ${folderslash}\n`, JSON.stringify(json.tree.slice(0, 10)));
+
+	await new Promise(resolve => setTimeout(resolve, 2000));
 
 	//					      'plugins/'			'plugins/test/abc.txt' -> 'test/abc.txt'		   'plugins/test/README.md'	    'plugins/test/ios'        'plugins/test/android'
 	const pluginTree = json.tree?.filter(t=>t.path.startsWith(folderslash) && t.path.replace(folderslash,'').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android"))) ?? [];
 	if (!json.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be! ' + JSON.stringify(pluginTree));
 
+	return;
 	for (const plugin of pluginTree) {
 		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
 
@@ -72,7 +75,7 @@ async function run() {
 		if (process?.env?.GITHUB_REPOSITORY) [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
 
 		const CONTENT = await generateREADME(process?.env?.GITHUB_REF_NAME ?? 'v2', folder, owner, repo);
-		await fs.writeFileSync(filename, CONTENT);
+		//await fs.writeFileSync(filename, CONTENT);
 	} catch (error) {
 		console.error(error);
 		core.setFailed(error.message);
