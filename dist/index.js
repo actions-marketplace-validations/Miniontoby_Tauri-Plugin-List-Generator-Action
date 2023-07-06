@@ -9810,7 +9810,7 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 	//					      'plugins/'			'plugins/test/abc.txt' -> 'test/abc.txt'		   'plugins/test/README.md'	    'plugins/test/ios'        'plugins/test/android'
 	const pluginTree = json.tree?.filter(t=>t.path.startsWith(folderslash) && t.path.replace(folderslash,'').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android"))) ?? [];
-	if (!json.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be!', pluginTree);
+	if (!json.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be! ' + JSON.stringify(pluginTree));
 
 	for (const plugin of pluginTree) {
 		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
