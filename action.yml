@@ -13,9 +13,13 @@ inputs:
     description: 'Use the variable secrets.GITHUB_TOKEN as value'
     required: true
 runs:
-  using: 'node16'
-  main: dist/index.js
+  using: "composite"
   steps:
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 16
+    - run: node dist/index.js
+      shell: bash
     - name: Update resources
       uses: test-room-7/action-update-file@v1
       with:
