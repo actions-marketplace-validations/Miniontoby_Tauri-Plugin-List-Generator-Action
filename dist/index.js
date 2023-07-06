@@ -9804,19 +9804,20 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 	const pluginTemplate = (p) => `| ${p.urlstr.padEnd(longest.urlstr," ")} | ${p.description.padEnd(longest.description, " ")} | ${(p.supported?.Win===!0)?'✅':'?'}  | ${(p.supported?.Mac===!0)?'✅':'?'}  | ${(p.supported?.Lin===!0)?'✅':'?'}  | ${(p.supported?.iOS===!0)?'✅':'?'}   | ${(p.supported?.And===!0)?'✅':'?'}   |\n`;
 
-	const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json())
-	const pluginTree = json.tree.filter(t=>t.path.startsWith(folderslash) && (t.path.replace(folderslash, '').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android"))));
+	const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json());
+	const pluginTree = json.tree?.filter(t=>t.path.startsWith(folderslash) && (t.path.replace(folderslash, '').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android")))) ?? [];
 	for (const plugin of pluginTree) {
-		plugin.foldername = file.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
+		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
 
 		if (plugin.path.endsWith("ios") || plugin.path.endsWith("android")) {
 			const pl = pluginTree.find((p)=>p.foldername==plugin.foldername);
 			if (pl && plugin.path.endsWith("ios")) pl.supported.iOS = true;
 			if (pl && plugin.path.endsWith("android")) pl.supported.And = true;
-			plugin.skip = true; continue;
+			plugin.skip = true;
+			continue;
 		}
 
-		plugin.urlstr = `[${file.folder}](${folder}/${file.folder})`;
+		plugin.urlstr = `[${plugin.foldername}](${folder}/${plugin.foldername})`;
 		plugin.description = '';
 		plugin.supported = { Win: null, Mac: null, Lin: null, iOS: null, And: null };
 		plugin.content = await fetch(plugin.url).then(r=>r.json()).then(d=>atob(d.content));
@@ -9845,19 +9846,25 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 async function run() {
 	try {
-		const filename = core.getInput('filename') ?? 'README.md';
-		const folder = core.getInput('folder');
+		let filename = core.getInput('filename');
+		if (filename == '') filename = 'README.md';
+		let folder = core.getInput('folder');
+		if (folder == '') folder = 'plugins';
 
 		let owner = 'tauri-apps', repo = 'plugins-workspace';
 		if (github.context.payload?.repository) {
 			owner = github.context.payload.repository.owner.login;
 			repo = github.context.payload.repository.name;
 		}
-		if (process.env.GITHUB_REPOSITORY) [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+		if (process?.env?.GITHUB_REPOSITORY) [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+		console.log(process?.env?.GITHUB_REF_NAME ?? 'v2', folder, owner, repo);
 
-		const CONTENT = await generateREADME(process.env.GITHUB_REF_NAME, folder, owner, repo);
+		const CONTENT = await generateREADME(process?.env?.GITHUB_REF_NAME ?? 'v2', folder, owner, repo);
+		core.info(`fn: ${filename}`);
+
 		await fs.writeFileSync(filename, CONTENT);
 	} catch (error) {
+		console.error(error);
 		core.setFailed(error.message);
 	}
 }
