@@ -9810,13 +9810,12 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 	console.log(`folderslash: ${folderslash}\n`, JSON.stringify(json.tree.slice(0, 10)));
 
-	await new Promise(resolve => setTimeout(resolve, 2000));
+	await new Promise(resolve => setTimeout(resolve, 3000));
 
 	//					      'plugins/'			'plugins/test/abc.txt' -> 'test/abc.txt'		   'plugins/test/README.md'	    'plugins/test/ios'        'plugins/test/android'
 	const pluginTree = json.tree?.filter(t=>t.path.startsWith(folderslash) && t.path.replace(folderslash,'').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android"))) ?? [];
 	if (!json.tree || pluginTree.length == 0) throw new Error('Json is NOT how it should be! ' + JSON.stringify(pluginTree));
 
-	return;
 	for (const plugin of pluginTree) {
 		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
 
@@ -9867,9 +9866,13 @@ async function run() {
 			repo = github.context.payload.repository.name;
 		}
 		if (process?.env?.GITHUB_REPOSITORY) [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+		if (owner == 'Miniontoby' && repo.toLowerCase() == 'tauri-plugin-list-generator-action') {
+			owner = 'tauri-apps';
+			repo = 'plugins-workspace';
+		}
 
 		const CONTENT = await generateREADME(process?.env?.GITHUB_REF_NAME ?? 'v2', folder, owner, repo);
-		//await fs.writeFileSync(filename, CONTENT);
+		await fs.writeFileSync(filename, CONTENT);
 	} catch (error) {
 		console.error(error);
 		core.setFailed(error.message);
