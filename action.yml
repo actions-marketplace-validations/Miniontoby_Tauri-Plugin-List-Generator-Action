@@ -20,7 +20,7 @@ runs:
         node-version: 18
     - run: node dist/index.js
       shell: bash
-      with:
+      env:
         filename: ${{ inputs.filename }}
         folder: ${{ inputs.folder }}
     - name: Update resources

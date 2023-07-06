@@ -9846,10 +9846,8 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 async function run() {
 	try {
-		let filename = core.getInput('filename');
-		if (filename == '') filename = 'README.md';
-		let folder = core.getInput('folder');
-		if (folder == '') folder = 'plugins';
+		let filename = process?.env?.filename ?? 'README.md';
+		let folder = process?.env?.folder ?? 'plugins';
 
 		let owner = 'tauri-apps', repo = 'plugins-workspace';
 		if (github.context.payload?.repository) {
