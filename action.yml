@@ -23,7 +23,7 @@ runs:
       env:
         filename: ${{ inputs.filename }}
         folder: ${{ inputs.folder }}
-        github-token: ${{ inputs.github_token }}
+        github_token: ${{ inputs.github_token }}
     - name: Update resources
       uses: test-room-7/action-update-file@v1
       with:
