@@ -9804,8 +9804,14 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 	const pluginTemplate = (p) => `| ${p.urlstr.padEnd(longest.urlstr," ")} | ${p.description.padEnd(longest.description, " ")} | ${(p.supported?.Win===!0)?'✅':'?'}  | ${(p.supported?.Mac===!0)?'✅':'?'}  | ${(p.supported?.Lin===!0)?'✅':'?'}  | ${(p.supported?.iOS===!0)?'✅':'?'}   | ${(p.supported?.And===!0)?'✅':'?'}   |\n`;
 
-	const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json());
+	const octokit = github.getOctokit(process?.env?.GITHUB_TOKEN)
+	const json = await octokit.rest.git.getTree({ owner, repo, tree_sha: branch, recursive: true });
+
+	// const json = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`).then(r=>r.json());
 	const pluginTree = json.tree?.filter(t=>t.path.startsWith(folderslash) && (t.path.replace(folderslash, '').split('/').length == 2 && (t.path.endsWith("README.md") || t.path.endsWith("ios") || t.path.endsWith("android")))) ?? [];
+	if (!json.tree) {
+		console.log('Json is NOT how it should be: ', json);
+	}
 	for (const plugin of pluginTree) {
 		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
 
