@@ -9,6 +9,9 @@ inputs:
     description: 'Path to location of plugins'
     required: true
     default: 'plugins'
+  github-token:
+    description: 'Use ${{ secrets.GITHUB_TOKEN }} as value'
+    required: true
 runs:
   using: 'node16'
   steps:
@@ -19,4 +22,4 @@ runs:
       with:
         file-path: ${{ inputs.filename }}
         commit-msg: Updated ${{ inputs.filename }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ inputs.github-token }}
