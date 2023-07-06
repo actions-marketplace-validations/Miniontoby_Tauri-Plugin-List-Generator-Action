@@ -63,7 +63,6 @@ async function run() {
 			repo = github.context.payload.repository.name;
 		}
 		if (process?.env?.GITHUB_REPOSITORY) [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-		console.log(process?.env?.GITHUB_REF_NAME ?? 'v2', folder, owner, repo);
 
 		const CONTENT = await generateREADME(process?.env?.GITHUB_REF_NAME ?? 'v2', folder, owner, repo);
 		await fs.writeFileSync(filename, CONTENT);

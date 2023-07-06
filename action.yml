@@ -20,6 +20,9 @@ runs:
         node-version: 18
     - run: node dist/index.js
       shell: bash
+      with:
+        filename: ${{ inputs.filename }}
+        folder: ${{ inputs.folder }}
     - name: Update resources
       uses: test-room-7/action-update-file@v1
       with:
