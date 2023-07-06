@@ -21,7 +21,15 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 		plugin.foldername = plugin.path.replace(folderslash, '').split("/")[0]; // ${folder}/myplugin/README.md
 
 		if (plugin.path.endsWith("ios") || plugin.path.endsWith("android")) {
-			const pl = pluginTree.find((p)=>p.foldername==plugin.foldername);
+			let pl = pluginTree.find((p)=>p.foldername==plugin.foldername);
+			if (!pl) {
+				// Maybe README hasn't been first, so we try to find it and use it
+				pl = pluginTree.find((p)=>{
+					const f=p.path.replace(folderslash, '').split("/");
+					return f[0]==plugin.foldername && f[1]=="README.md";
+				});
+				if (pl) pl.supported = { Win: null, Mac: null, Lin: null, iOS: null, And: null };
+			}
 			if (pl && plugin.path.endsWith("ios")) pl.supported.iOS = true;
 			if (pl && plugin.path.endsWith("android")) pl.supported.And = true;
 			plugin.skip = true;
@@ -30,19 +38,25 @@ async function generateREADME(branch='v2', folder='plugins', owner='tauri-apps',
 
 		plugin.urlstr = `[${plugin.foldername}](${folder}/${plugin.foldername})`;
 		plugin.description = '';
-		plugin.supported = { Win: null, Mac: null, Lin: null, iOS: null, And: null };
+		if (!plugin.supported) plugin.supported = { Win: null, Mac: null, Lin: null, iOS: null, And: null };
 		plugin.content = await octokit.rest.git.getBlob({ owner, repo, file_sha: plugin.url.replace(/.*\/git\/blobs\//,'') }).then(d=>atob(d.data.content)); 
 
 		const regex = /\[([^\]]+)\]\(([^\)]+)\)\n\n(.*)\n\n## Install/s;
-		let m;
+		let m, n;
 		if ((m = regex.exec(plugin.content)) !== null) {
 			plugin.description = m[3].replaceAll("\n", " ").replace(/>.*/s, "");
-			if ((m = /(.*)(\n\n- Supported platforms: (.*))/s.exec(m[3]))) {
-				plugin.description = m[1];
-				plugin.supportedstr = m[3]; // Windows, Linux, FreeBSD, NetBSD, OpenBSD, and macOS.
-				plugin.supported.Win = plugin.supportedstr.includes("Windows");
-				plugin.supported.Mac = plugin.supportedstr.includes("macOS");
-				plugin.supported.Lin = plugin.supportedstr.includes("Linux");
+
+			// match '- Supported platforms: Windows, Linux, FreeBSD, NetBSD, OpenBSD, and macOS.' OR 'Supports Windows, Mac (via AppleScript or Launch Agent), and Linux.'
+			if ((n = /(.*)(\n\n- Supported platforms: (.*))/s.exec(m[3])) || (n = /(.*)( Supports (.*))/s.exec(m[3]))) {
+				plugin.description = n[1];
+				plugin.supportedstr = n[3].toLowerCase();
+				plugin.supported.Win = plugin.supportedstr.includes("windows");
+				plugin.supported.Mac = plugin.supportedstr.includes("mac");
+				plugin.supported.Lin = plugin.supportedstr.includes("linux");
+
+				// only change if it is in here, unless keep what it was, since it MIGHT have been already set to it
+				if (plugin.supportedstr.includes("ios")) plugin.supported.Ios = true;
+				if (plugin.supportedstr.includes("android")) plugin.supported.And = true;
 			} else plugin.supported = { ...plugin.supported, Win: true, Mac: true, Lin: true };
 		}
 
