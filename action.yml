@@ -1,7 +1,8 @@
 name: 'Tauri Plugin README Generator'
 description: 'Generate README for Tauri Plugin Workspace'
-icon: code
-color: green
+branding:
+  icon: 'code'
+  color: 'green'
 inputs:
   filename:
     description: 'Output filename'
